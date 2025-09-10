@@ -4,6 +4,7 @@ import { ColumnDisplay } from "./column-display";
 import { fetchMovies, fetchTvShows } from "./query";
 import { useQuery } from "@tanstack/react-query";
 import { DisplayType } from "../../constants/display-types";
+import { Navigate } from "react-router-dom";
 
 export const Home = () => {
   const [displayType, setDisplayType] = useState<DisplayType>(
@@ -48,10 +49,12 @@ export const Home = () => {
     );
   }
 
-  // استفاده امن از results
   const movies = movieData?.results || [];
   const tvShows = tvShowData?.results || [];
 
+  if (localStorage.getItem("guest_session_id") === null) {
+    return <Navigate to="/auth" />;
+  }
   return (
     <div style={{ margin: 50, height: "auto" }}>
       <Button.Group>
