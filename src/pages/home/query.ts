@@ -1,3 +1,4 @@
+// query.ts
 export const fetchMovies = async () => {
   const res = await fetch(
     "https://api.themoviedb.org/3/movie/popular?language=en-US&page=1",
@@ -8,8 +9,14 @@ export const fetchMovies = async () => {
       },
     }
   );
-  console.log(res.json());
-  return res.json();
+
+  if (!res.ok) {
+    throw new Error(`Movies API error: ${res.status}`);
+  }
+
+  const data = await res.json(); // فقط یک بار صدا زدن
+  console.log("Movies API:", data);
+  return data;
 };
 
 export const fetchTvShows = async () => {
@@ -22,6 +29,12 @@ export const fetchTvShows = async () => {
       },
     }
   );
-  console.log(res.json());
-  return res.json();
+
+  if (!res.ok) {
+    throw new Error(`TV Shows API error: ${res.status}`);
+  }
+
+  const data = await res.json(); // فقط یک بار صدا زدن
+  console.log("TV Shows API:", data);
+  return data;
 };

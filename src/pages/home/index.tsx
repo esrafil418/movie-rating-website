@@ -1,28 +1,56 @@
 import { useState } from "react";
 import { Button } from "semantic-ui-react";
-import { ColumnDisplay } from "./column-display"; // ❌ قبلاً type بود
+import { ColumnDisplay } from "./column-display";
 import { fetchMovies, fetchTvShows } from "./query";
 import { useQuery } from "@tanstack/react-query";
-
-export enum DisplayType {
-  Movies = "movies",
-  TvShows = "tvshows",
-}
+import { DisplayType } from "../../constants/display-types";
 
 export const Home = () => {
   const [displayType, setDisplayType] = useState<DisplayType>(
     DisplayType.Movies
   );
 
-  const { data: movieData, isLoading: isLoadingMovies } = useQuery({
+  const {
+    data: movieData,
+    isLoading: isLoadingMovies,
+    isError: isErrorMovies,
+    error: movieError,
+  } = useQuery({
     queryKey: ["movies"],
     queryFn: fetchMovies,
   });
 
-  const { data: TvShowData, isLoading: isLoadingTvShows } = useQuery({
+  const {
+    data: tvShowData,
+    isLoading: isLoadingTvShows,
+    isError: isErrorTvShows,
+    error: tvShowError,
+  } = useQuery({
     queryKey: ["tvshows"],
     queryFn: fetchTvShows,
   });
+
+  if (isLoadingMovies || isLoadingTvShows) {
+    return <div style={{ margin: 50 }}>Loading...</div>;
+  }
+
+  if (isErrorMovies) {
+    return (
+      <div style={{ margin: 50 }}>Error loading movies: {`${movieError}`}</div>
+    );
+  }
+
+  if (isErrorTvShows) {
+    return (
+      <div style={{ margin: 50 }}>
+        Error loading TV shows: {`${tvShowError}`}
+      </div>
+    );
+  }
+
+  // استفاده امن از results
+  const movies = movieData?.results || [];
+  const tvShows = tvShowData?.results || [];
 
   return (
     <div style={{ margin: 50, height: "auto" }}>
@@ -31,7 +59,7 @@ export const Home = () => {
           color={displayType === DisplayType.Movies ? "blue" : undefined}
           onClick={() => setDisplayType(DisplayType.Movies)}
         >
-          Movie
+          Movies
         </Button>
         <Button
           color={displayType === DisplayType.TvShows ? "blue" : undefined}
@@ -41,23 +69,13 @@ export const Home = () => {
         </Button>
       </Button.Group>
 
-      {isLoadingMovies || isLoadingTvShows ? (
-        <div>Loading...</div>
-      ) : (
-        <div style={{ marginTop: 20 }}>
-          {displayType === DisplayType.Movies ? (
-            <ColumnDisplay
-              data={movieData.results}
-              displayType={DisplayType.Movies}
-            />
-          ) : (
-            <ColumnDisplay
-              data={TvShowData.results}
-              displayType={DisplayType.TvShows}
-            />
-          )}
-        </div>
-      )}
+      <div style={{ marginTop: 20 }}>
+        {displayType === DisplayType.Movies ? (
+          <ColumnDisplay data={movies} displayType={DisplayType.Movies} />
+        ) : (
+          <ColumnDisplay data={tvShows} displayType={DisplayType.TvShows} />
+        )}
+      </div>
     </div>
   );
 };

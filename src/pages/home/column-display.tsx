@@ -1,4 +1,5 @@
-import { DisplayType } from ".";
+import { Grid, Card } from "semantic-ui-react";
+import { DisplayType } from "../../constants/display-types"; //
 
 interface DisplayData {
   id: number;
@@ -15,12 +16,32 @@ interface Props {
   displayType: DisplayType;
 }
 
-export const ColumnDisplay = (props: Props) => {
+export const ColumnDisplay = ({ data, displayType }: Props) => {
   return (
-    <div>
-      {props.displayType === DisplayType.Movies
-        ? props.data[0].title
-        : props.data[0].name}
-    </div>
+    <Grid
+      columns={3}
+      stackable
+      centered
+      verticalAlign="top"
+      padded="vertically"
+    >
+      {data.map((displayData) => (
+        <Grid.Column key={displayData.id}>
+          <Card.Group>
+            <Card
+              fluid
+              image={`https://image.tmdb.org/t/p/original/${displayData.poster_path}`}
+              header={
+                displayType === DisplayType.Movies
+                  ? displayData.title
+                  : displayData.name
+              }
+              meta={`Release Date: ${displayData.release_date} | Ratings: ${displayData.vote_average}`}
+              description={displayData.overview.slice(0, 350) + "..."}
+            />
+          </Card.Group>
+        </Grid.Column>
+      ))}
+    </Grid>
   );
 };
