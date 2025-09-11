@@ -1,27 +1,52 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
-import { Grid, Loader, Segment, Image, List, Label } from "semantic-ui-react";
-import { fetchMovieDetails } from "./query";
+import {
+  Grid,
+  Loader,
+  Segment,
+  Image,
+  List,
+  Label,
+  Header,
+} from "semantic-ui-react";
+import { fetchMovieDetails } from "../../services/tmdb";
+import type { MovieDetails } from "../../types/tmdb";
 
 export const Movie = () => {
-  const { id } = useParams<string>();
+  const { id } = useParams<{ id: string }>();
 
+  const { data, isLoading, error } = useQuery<MovieDetails>({
+    queryKey: ["movie", id],
+    queryFn: () => fetchMovieDetails(id as string),
+    enabled: !!id, // don't run if no id
+  });
+
+  // ! handle conditions
   if (!id) {
     return <div>Invalid Movie ID</div>;
   }
-
-  const { data, isLoading } = useQuery({
-    queryKey: ["movie"],
-    queryFn: () => fetchMovieDetails(id),
-  });
 
   if (isLoading) {
     return <Loader active />;
   }
 
+  if (error) {
+    return <div>Failed to load movie details</div>;
+  }
+
+  if (!data) {
+    return <div>No data found</div>;
+  }
+
+  // ! If API fails or `data` is null/undefined → return error message
+  if (!data) {
+    return <div>Could not fetch movie details</div>;
+  }
+
   return (
     <div style={{ marginTop: 50 }}>
       <Segment>
+        {/* ✅ Now we can use data safely because we already checked above */}
         <Header>{data.title}</Header>
         <Grid columns={2} divided textAlign="left" style={{ marginTop: 20 }}>
           <Grid.Row>
@@ -34,6 +59,7 @@ export const Movie = () => {
                   height: "100%",
                 }}
               >
+                {/* Poster image */}
                 <Image
                   src={`https://image.tmdb.org/t/p/original/${data.poster_path}`}
                   size="medium"
@@ -43,6 +69,7 @@ export const Movie = () => {
             </Grid.Column>
             <Grid.Column width={10}>
               <List>
+                {/* Each field below is strongly typed because of MovieDetails */}
                 <List.Item>
                   <List.Header>
                     Is The Movie For Adults:
@@ -58,7 +85,7 @@ export const Movie = () => {
                 <List.Item>
                   <List.Header>
                     Genres:
-                    {data.genres.map((genre: any) => (
+                    {data.genres.map((genre) => (
                       <Label key={genre.id}>{genre.name}</Label>
                     ))}
                   </List.Header>
@@ -79,7 +106,7 @@ export const Movie = () => {
                   <List.Header>
                     Production Companies:
                     {data.production_companies
-                      .map((company: any) => company.name)
+                      .map((company) => company.name)
                       .join(", ")}
                   </List.Header>
                 </List.Item>

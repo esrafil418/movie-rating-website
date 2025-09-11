@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "semantic-ui-react";
 import { ColumnDisplay } from "./column-display";
-import { fetchMovies, fetchTvShows } from "./query";
+import { fetchMovies, fetchTvShows } from "../../services/tmdb";
 import { useQuery } from "@tanstack/react-query";
 import { DisplayType } from "../../constants/display-types";
 import { Navigate } from "react-router-dom";
