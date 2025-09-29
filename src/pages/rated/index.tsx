@@ -14,7 +14,12 @@ export const Rated = () => {
 
   // ? Always call hooks in the same order. Use "enabled" to avoid running queries when no session id.
   // useQuery for ratedMovies already includes guestSessionId as key
-  const { data: ratedMovies } = useQuery({
+  const {
+    data: ratedMovies,
+    isLoading: isLoadingRatedMovies,
+    isError: isErrorRatedMovies,
+    error: ratedMoviesError,
+  } = useQuery({
     queryKey: ["ratedMovies", guestSessionId],
     queryFn: fetchRatedMovies,
     enabled: !!guestSessionId,
