@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.87.1",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-router-dom": "^7.8.2",
     "react-toastify": "^11.0.5",
     "semantic-ui-css": "^2.5.0",
@@ -20,8 +20,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
-    "@types/react": "^19.1.10",
-    "@types/react-dom": "^19.1.7",
+    "@types/react": "^18.2.21",
+    "@types/react-dom": "^18.2.7",
     "@vitejs/plugin-react": "^5.0.0",
     "eslint": "^9.33.0",
     "eslint-plugin-react-hooks": "^5.2.0",

@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   Grid,
@@ -8,46 +9,44 @@ import {
   List,
   Label,
   Header,
+  Button,
 } from "semantic-ui-react";
 import { fetchMovieDetails } from "../../services/tmdb";
+import { useRate } from "../../hooks/useRate";
 import type { MovieDetails } from "../../types/tmdb";
 
 export const Movie = () => {
   const { id } = useParams<{ id: string }>();
+  const guestSessionId = localStorage.getItem("guest_session_id");
 
-  const { data, isLoading, error } = useQuery<MovieDetails>({
+  const { data, isLoading } = useQuery<MovieDetails>({
     queryKey: ["movie", id],
-    queryFn: () => fetchMovieDetails(id as string),
-    enabled: !!id, // don't run if no id
+    queryFn: () => fetchMovieDetails(id!),
+    enabled: !!id,
   });
 
-  // ! handle conditions
-  if (!id) {
-    return <div>Invalid Movie ID</div>;
-  }
+  const rateMutation = useRate();
+  const [isMutating, setIsMutating] = useState(false);
 
-  if (isLoading) {
-    return <Loader active />;
-  }
+  const handleRate = (value: number) => {
+    if (!guestSessionId || !id) return alert("Please login first!");
+    setIsMutating(true);
+    rateMutation.mutate(
+      { id, value, guestSessionId, type: "movie" },
+      {
+        onSettled: () => setIsMutating(false),
+        onError: () => setIsMutating(false),
+      }
+    );
+  };
 
-  if (error) {
-    return <div>Failed to load movie details</div>;
-  }
-
-  if (!data) {
-    return <div>No data found</div>;
-  }
-
-  // ! If API fails or `data` is null/undefined → return error message
-  if (!data) {
-    return <div>Could not fetch movie details</div>;
-  }
+  if (!id) return <div>Invalid Movie ID</div>;
+  if (isLoading) return <Loader active />;
 
   return (
     <div style={{ marginTop: 50 }}>
       <Segment>
-        {/* ✅ Now we can use data safely because we already checked above */}
-        <Header>{data.title}</Header>
+        <Header>{data?.title}</Header>
         <Grid columns={2} divided textAlign="left" style={{ marginTop: 20 }}>
           <Grid.Row>
             <Grid.Column width={6}>
@@ -59,9 +58,8 @@ export const Movie = () => {
                   height: "100%",
                 }}
               >
-                {/* Poster image */}
                 <Image
-                  src={`https://image.tmdb.org/t/p/original/${data.poster_path}`}
+                  src={`https://image.tmdb.org/t/p/original/${data?.poster_path}`}
                   size="medium"
                   centered
                 />
@@ -69,78 +67,32 @@ export const Movie = () => {
             </Grid.Column>
             <Grid.Column width={10}>
               <List>
-                {/* Each field below is strongly typed because of MovieDetails */}
                 <List.Item>
                   <List.Header>
-                    Is The Movie For Adults:
-                    {data.adult ? "Yes" : "No"}
-                  </List.Header>
-                </List.Item>
-                <List.Item>
-                  <List.Header>
-                    Budget:
-                    {data.budget}
-                  </List.Header>
-                </List.Item>
-                <List.Item>
-                  <List.Header>
-                    Genres:
-                    {data.genres.map((genre) => (
+                    Genres:{" "}
+                    {data?.genres.map((genre) => (
                       <Label key={genre.id}>{genre.name}</Label>
                     ))}
                   </List.Header>
                 </List.Item>
-                <List.Item>
-                  <List.Header>
-                    IMDB ID:
-                    {data.imdb_id}
-                  </List.Header>
-                </List.Item>
-                <List.Item>
-                  <List.Header>
-                    Popularity:
-                    {data.popularity}
-                  </List.Header>
-                </List.Item>
-                <List.Item>
-                  <List.Header>
-                    Production Companies:
-                    {data.production_companies
-                      .map((company) => company.name)
-                      .join(", ")}
-                  </List.Header>
-                </List.Item>
-                <List.Item>
-                  <List.Header>
-                    Release Date:
-                    {data.release_date}
-                  </List.Header>
-                </List.Item>
-                <List.Item>
-                  <List.Header>
-                    Revenue:
-                    {data.revenue}
-                  </List.Header>
-                </List.Item>
-                <List.Item>
-                  <List.Header>
-                    Runtime:
-                    {data.runtime}
-                  </List.Header>
-                </List.Item>
-                <List.Item>
-                  <List.Header>
-                    Vote Average:
-                    {data.vote_average}
-                  </List.Header>
-                </List.Item>
-                <List.Item>
-                  <List.Header>
-                    Language:
-                    {data.original_language}
-                  </List.Header>
-                </List.Item>
               </List>
+
+              <div style={{ marginTop: 20 }}>
+                <Header as="h4">Rate this movie:</Header>
+                <div style={{ display: "flex", gap: "10px" }}>
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((v) => (
+                    <Button
+                      key={v}
+                      color="violet"
+                      size="small"
+                      disabled={isMutating}
+                      onClick={() => handleRate(v)}
+                    >
+                      {v}
+                    </Button>
+                  ))}
+                </div>
+              </div>
             </Grid.Column>
           </Grid.Row>
         </Grid>

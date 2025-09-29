@@ -24,6 +24,8 @@ export const TvShow = () => {
     enabled: isIdValid, // ! only call if id exists
   });
 
+  // Rating is handled on the detail/listing pages; no local rating UI here.
+
   if (!id) {
     return <div>Invalid TV-Show ID</div>;
   }
@@ -114,7 +116,7 @@ export const TvShow = () => {
                       }) => (
                         <Image
                           key={network.id}
-                          src={`https://image.tmdb.org/t/p/orginal/${network.logo_path}`}
+                          src={`https://image.tmdb.org/t/p/original/${network.logo_path}`}
                           size="small"
                           style={{ marginRight: 10 }}
                         />

@@ -27,7 +27,13 @@ export const Auth = () => {
         </Header>
         <Form size="large">
           <Segment stacked>
-            <Button color="violet" size="large" fluid onClick={handleLogin}>
+            <Button
+              type="button"
+              color="violet"
+              size="large"
+              fluid
+              onClick={handleLogin}
+            >
               Login
             </Button>
           </Segment>

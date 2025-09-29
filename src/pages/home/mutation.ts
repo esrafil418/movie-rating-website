@@ -1,3 +1,4 @@
+// home/mutation.ts
 export const rateMovie = async (movieId: number, rating: number) => {
   const res = await fetch(
     `https://api.themoviedb.org/3/movie/${movieId}/rating?guest_session_id=${localStorage.getItem(
@@ -9,10 +10,11 @@ export const rateMovie = async (movieId: number, rating: number) => {
         accept: "application/json",
         "content-type": "application/json;charset=utf-8",
       },
-      body: `{"value": ${rating}}`,
+      body: JSON.stringify({ value: rating }),
     }
   );
-  console.log(res.json());
+
+  if (!res.ok) throw new Error(`Failed to rate movie: ${res.status}`);
   return res.json();
 };
 
@@ -27,9 +29,10 @@ export const rateTvShow = async (tvShowId: number, rating: number) => {
         accept: "application/json",
         "content-type": "application/json;charset=utf-8",
       },
-      body: `{"value": ${rating}}`,
+      body: JSON.stringify({ value: rating }),
     }
   );
-  console.log(res.json());
+
+  if (!res.ok) throw new Error(`Failed to rate TV show: ${res.status}`);
   return res.json();
 };

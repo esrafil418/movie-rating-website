@@ -1,3 +1,6 @@
+// types/tmdb.d.ts
+
+// ---------------- Movie ----------------
 export interface Genre {
   id: number;
   name: string;
@@ -28,16 +31,17 @@ export interface MovieDetails {
   original_language: string;
 }
 
-interface TvShowDetails {
+// ---------------- TV Show ----------------
+export interface TvShowDetails {
   id: number;
   name: string;
   poster_path: string;
   created_by: { id: number; name: string }[];
   episode_run_time: number[];
-  genres: { id: number; name: string }[];
+  genres: Genre[];
   first_air_date: string;
   networks: { id: number; name: string; logo_path: string }[];
-  production_companies: { id: number; name: string }[];
+  production_companies: ProductionCompany[];
   number_of_episodes: number;
   number_of_seasons: number;
   seasons: {
@@ -46,5 +50,21 @@ interface TvShowDetails {
     air_date: string;
     episode_count: number;
   }[];
+  vote_average: number;
+}
+
+// ---------------- Rated Lists ----------------
+export interface RatedMovie {
+  id: number;
+  title: string;
+  poster_path: string;
+  vote_average: number;
+  // می‌تونی بعداً فیلدهای بیشتری اضافه کنی
+}
+
+export interface RatedTvShow {
+  id: number;
+  name: string;
+  poster_path: string;
   vote_average: number;
 }

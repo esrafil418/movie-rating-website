@@ -4,7 +4,7 @@ import { ColumnDisplay } from "./column-display";
 import { fetchMovies, fetchTvShows } from "../../services/tmdb";
 import { useQuery } from "@tanstack/react-query";
 import { DisplayType } from "../../constants/display-types";
-import { Navigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export const Home = () => {
   const [displayType, setDisplayType] = useState<DisplayType>(
@@ -52,11 +52,16 @@ export const Home = () => {
   const movies = movieData?.results || [];
   const tvShows = tvShowData?.results || [];
 
-  if (localStorage.getItem("guest_session_id") === null) {
-    return <Navigate to="/auth" />;
-  }
+  const isGuest = localStorage.getItem("guest_session_id") === null;
+
   return (
     <div style={{ margin: 50, height: "auto" }}>
+      {isGuest && (
+        <div style={{ marginBottom: 12 }}>
+          You are not logged in. <Link to="/auth">Login as guest</Link> to rate
+          items.
+        </div>
+      )}
       <Button.Group>
         <Button
           color={displayType === DisplayType.Movies ? "blue" : undefined}

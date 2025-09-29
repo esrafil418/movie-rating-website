@@ -13,15 +13,11 @@ export const Rated = () => {
   const [activeTabs, setActiveTabs] = useState<DisplayType>(DisplayType.Movies);
 
   // ? Always call hooks in the same order. Use "enabled" to avoid running queries when no session id.
-  const {
-    data: ratedMovies,
-    isLoading: isLoadingRatedMovies,
-    isError: isErrorRatedMovies,
-    error: ratedMoviesError,
-  } = useQuery({
+  // useQuery for ratedMovies already includes guestSessionId as key
+  const { data: ratedMovies } = useQuery({
     queryKey: ["ratedMovies", guestSessionId],
     queryFn: fetchRatedMovies,
-    enabled: !!guestSessionId, // ! only run when guestSessionId exists
+    enabled: !!guestSessionId,
   });
 
   const {
